@@ -1,0 +1,11 @@
+{
+  "source" : {
+    "type" : "mongodb",
+    "string" : "mongodb://localhost:27017/gtfs",
+    "collections" : {
+      "connections" : "connections",
+      "stops" : "stations"
+    }
+  },
+  "port" : 8080
+}

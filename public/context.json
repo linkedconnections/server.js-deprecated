@@ -1,0 +1,31 @@
+{
+  "@context" : {
+    "gtfs" : "http://vocab.gtfs.org/terms#",
+    "st": "http://semweb.mmlab.be/ns/linkedconnections#",
+    "lc": "http://semweb.mmlab.be/ns/linkedconnections#",
+    "arrivalTime" : "http://semweb.mmlab.be/ns/linkedconnections#arrivalTime",
+    "departureTime" : "http://semweb.mmlab.be/ns/linkedconnections#departureTime",
+    "arrivalStop" : {
+      "@id" : "http://semweb.mmlab.be/ns/linkedconnections#arrivalStop",
+      "@type" : "@id"
+    },
+    "departureStop" : {
+      "@id" : "http://semweb.mmlab.be/ns/linkedconnections#departureStop",
+      "@type" : "@id"
+    },
+    "headsign" : "gtfs:headSign",
+    "route" : {
+      "@id" : "gtfs:route",
+      "@type" : "@id"
+    },
+    "trip" : {
+      "@id" : "gtfs:trip",
+      "@type" : "@id"
+    },
+    "accessibility" : {
+      "@id" : "gtfs:wheelchairAccessible",
+      "@type" : "@id"
+    },
+    "name" : "http://xmlns.com/foaf/0.1/name"
+  }
+}
