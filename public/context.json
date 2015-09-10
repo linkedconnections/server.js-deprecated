@@ -1,5 +1,6 @@
 {
   "@context" : {
+    "hydra" : "http://www.w3.org/ns/hydra/core#",
     "gtfs" : "http://vocab.gtfs.org/terms#",
     "st": "http://semweb.mmlab.be/ns/linkedconnections#",
     "lc": "http://semweb.mmlab.be/ns/linkedconnections#",
