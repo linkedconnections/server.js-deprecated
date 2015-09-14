@@ -24,6 +24,22 @@ npm install
 
 Copy config-example.json to config.json and fill out all the details.
 
+### Load connections in MongoDB
+
+First, make sure that you have [MongoDB](https://www.mongodb.org/) installed.
+
+Now you have two options:
+1) You already have a connections.json file:
+
+Run following commands (based on example configuration) in your terminal:
+```bash
+mongoimport --host 127.0.0.1 --db gtfs --collection connections --file connections.jsonldstream
+
+mongo gtfs --eval 'db.connections.find().forEach(function(conn){conn["arrivalTime"] = new ISODate(conn["arrivalTime"]);conn["departureTime"] = new ISODate(conn["departureTime"]);db.connections.save(conn)});'
+```
+
+2) Generate connections from arrivals/departures and stream them directly into MongoDB by using ```--mongodb``` in [this](https://github.com/linkedconnections/arrdep2connections) project.
+
 ### Start the server
 
 ```bash
