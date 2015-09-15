@@ -21,6 +21,12 @@ module.exports = function (req, res, next) {
     } else {
       dt = moment(dt);
     }
+
+    // Round minutes down with modulus of 10
+    var minutes = dt.minutes();
+    minutes %= 10;
+    dt.subtract(minutes, 'minutes');
+
     //for now, just accept everything
     return dt.format("YYYY-MM-DDTHH:mm");
   };

@@ -6,7 +6,7 @@ module.exports = function (request, response, next) {
   if (!request.query.departureTime) {
     response.redirect(302,'?departureTime=' + request.locals.page.getCorrectPageId(new Date));
   } else if (request.locals.page.getCorrectPageId(request.query.departureTime) !== request.query.departureTime){
-    response.redirect(301, request.locals.page.getCorrectPageId(request.query.departureTime));
+    response.redirect(301, '?departureTime=' + request.locals.page.getCorrectPageId(request.query.departureTime));
   } else {
     //2. If it is a good page, then we can start streaming out the response and a HTTP 200 OK should be returned.
     // → We will now have to create a model for the data we want to retrieve from the db
