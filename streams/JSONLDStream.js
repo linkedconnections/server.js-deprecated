@@ -26,7 +26,11 @@ JSONLDStream.prototype._transform = function (connection, encoding, done) {
 }
 
 JSONLDStream.prototype._flush = function (callback) {
-    this.push(']}');
+    if(this._hasWritten) {
+        this.push(']}');
+    } else {
+        this.push('[]}'); // no connections
+    } 
     callback();
 };
 
