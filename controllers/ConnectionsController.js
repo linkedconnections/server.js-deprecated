@@ -11,24 +11,17 @@ module.exports = function (request, response, next) {
     //2. If it is a good page, then we can start streaming out the response and a HTTP 200 OK should be returned.
     // → We will now have to create a model for the data we want to retrieve from the db
     var connections = new ConnectionsModel(request.db);
-    //3. Create output if a graph was created
-    connections.getPage(request.locals.page, function (error, graph) {
+
+    //3. Stream output when graph is being generated
+    connections.getPage(request.locals.page, request, function (error, jsonldStream) {
       if (error) {
         next(error);
       } else {
         //Create output
         response.status(200);
         response.type("application/ld+json");
-        var context = "http://localhost:8080/context.json";
-        var metadata = {
-          "@id" : "http://localhost:8080" + request.url +"",
-          "hydra:nextPage" : request.locals.page.getNextPage(),
-          "hydra:previousPage" : request.locals.page.getPreviousPage(),
-        };
-        var result = metadata;
-        result["@context"] = context;
-        result["@graph"] = graph;
-        response.end(JSON.stringify(result));
+
+        jsonldStream.pipe(response);
         next();
       }
     });

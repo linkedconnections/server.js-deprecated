@@ -1,4 +1,5 @@
-var MongoClient = require('mongodb').MongoClient;
+var MongoClient = require('mongodb').MongoClient,
+    JSONLDStream = require('../streams/JSONLDStream.js');
 
 var MongoDBConnector = function () {
   return function (req, res, next) {
@@ -16,13 +17,13 @@ var MongoDBConnector = function () {
 MongoDBConnector.connect = function (dbstring, collections, cb) {
   this.collections = collections;
   //check if we already have a db connection
-  if (typeof this._db !== "undefined") {
+  if (typeof this._db !== 'undefined') {
     cb();
   } else {
     var self = this;
     MongoClient.connect(dbstring, function(err, db) {
       if (err) {
-        cb("Error connecting to the db: " + err);
+        cb('Error connecting to the db: ' + err);
       }
       self._db = db;
       cb();
@@ -33,26 +34,50 @@ MongoDBConnector.connect = function (dbstring, collections, cb) {
 /**
  * @param page is an object describing the page of the resource
  */
-MongoDBConnector._getMongoConnectionsStream = function (page, cb) {
-  this._db.collection(this.collections["connections"]).find({"st:departureTime": {"$gt" : page.start, "$lt" : page.end}}).sort({"st:departureTime":1}).toArray(cb);
+MongoDBConnector._getMongoConnectionsStream = function (page, request, cb) {
+  var self = this;
+
+  // Get context
+  this._db.collection(this.collections['connections']).find({ '@context' : { '$exists' : true} }, { _id: 0}).toArray(function(err, context) {
+    var metadata = {
+      "@id" : "http://localhost:8080" + request.url +"",
+      "hydra:nextPage" : request.locals.page.getNextPage(),
+      "hydra:previousPage" : request.locals.page.getPreviousPage(),
+    };
+
+    var resultContext = {};
+    resultContext['@context'] = {};
+
+    // Add metadata
+    for(var key in metadata) resultContext['@context'][key]=metadata[key];
+
+    // Add rest of context
+    for(var key in context[0]['@context']) resultContext['@context'][key]=context[0]['@context'][key];
+
+    var jsonldStream = new JSONLDStream(resultContext);
+
+    var connectionsStream = self._db.collection(self.collections['connections']).find({'departureTime': {'$gt' : page.start, '$lt' : page.end}}).sort({'departureTime':1}).stream({
+      transform: function(connection) {
+        return connection;
+      }
+    });
+
+    cb(null, connectionsStream.pipe(jsonldStream));
+  });
 };
 
-MongoDBConnector.getConnectionsPage = function (page, cb) {
-  var stream = this._getMongoConnectionsStream(page, function (error, connections) {
+MongoDBConnector.getConnectionsPage = function (page, request, cb) {
+  var stream = this._getMongoConnectionsStream(page, request, function (error, jsonldStream) {
     if (error) {
       cb (error);
-    } else {
-      connections.forEach(function (connection) {
-        connection["@id"] = connection["_id"];
-        delete(connection["_id"]);
-      });
-      cb(null, connections);
+    } else {    
+      cb(null, jsonldStream);
     }
   });
 };
 
 MongoDBConnector.getStops = function (cb) {
-  this._db.collection(this.collections["stations"]).find().toArray(cb);
+  this._db.collection(this.collections['stations']).find().toArray(cb);
 };
 
 module.exports = MongoDBConnector;
