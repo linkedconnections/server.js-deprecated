@@ -21,6 +21,12 @@ module.exports = function (req, res, next) {
     } else {
       dt = moment(dt);
     }
+
+    // Round minutes down with modulus of 10
+    var minutes = dt.minutes();
+    minutes %= 10;
+    dt.subtract(minutes, 'minutes');
+
     //for now, just accept everything
     return dt.format("YYYY-MM-DDTHH:mm");
   };
@@ -33,6 +39,11 @@ module.exports = function (req, res, next) {
   req.locals.page.getPreviousPage = function () {
     var dt = moment(req.query.departureTime);
     return "http://localhost:8080/connections/?departureTime=" + dt.subtract(10, "minutes").format("YYYY-MM-DDTHH:mm");
+  }
+
+  req.locals.page.getCurrentPage = function () {
+    var dt = moment(req.query.departureTime);
+    return "http://localhost:8080/connections/?departureTime=" + dt.format("YYYY-MM-DDTHH:mm");
   }
   
   next();

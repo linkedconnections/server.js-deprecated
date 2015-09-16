@@ -6,9 +6,8 @@ ConnectionsModel.prototype.get = function (connectionid, cb) {
   this._db.getConnection(connectionid);
 };
 
-ConnectionsModel.prototype.getPage = function (page, cb) {
-  var interval = page.getInterval();
-  this._db.getConnectionsPage(interval, cb);
+ConnectionsModel.prototype.getPage = function (page, request, cb) {
+  this._db.getConnectionsPage(page, request, cb);
 };
 
 ConnectionsModel.prototype.create = function (connection, cb) {
