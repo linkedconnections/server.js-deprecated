@@ -13,7 +13,7 @@ module.exports = function (request, response, next) {
     var connections = new ConnectionsModel(request.db);
 
     //3. Stream output when graph is being generated
-    connections.getPage(request.locals.page, request, function (error, jsonldStream) {
+    connections.getPage(request.locals.page, function (error, jsonldStream) {
       if (error) {
         next(error);
       } else {

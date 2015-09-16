@@ -40,6 +40,11 @@ module.exports = function (req, res, next) {
     var dt = moment(req.query.departureTime);
     return "http://localhost:8080/connections/?departureTime=" + dt.subtract(10, "minutes").format("YYYY-MM-DDTHH:mm");
   }
+
+  req.locals.page.getCurrentPage = function () {
+    var dt = moment(req.query.departureTime);
+    return "http://localhost:8080/connections/?departureTime=" + dt.format("YYYY-MM-DDTHH:mm");
+  }
   
   next();
 }

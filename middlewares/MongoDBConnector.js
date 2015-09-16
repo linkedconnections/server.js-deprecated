@@ -34,15 +34,15 @@ MongoDBConnector.connect = function (dbstring, collections, cb) {
 /**
  * @param page is an object describing the page of the resource
  */
-MongoDBConnector._getMongoConnectionsStream = function (page, request, cb) {
+MongoDBConnector._getMongoConnectionsStream = function (page, cb) {
   var self = this;
 
   // Get context
   this._db.collection(this.collections['connections']).find({ '@context' : { '$exists' : true} }, { _id: 0}).toArray(function(err, context) {
     var metadata = {
-      "@id" : "http://localhost:8080" + request.url +"",
-      "hydra:nextPage" : request.locals.page.getNextPage(),
-      "hydra:previousPage" : request.locals.page.getPreviousPage(),
+      "@id" : page.getCurrentPage(),
+      "hydra:nextPage" : page.getNextPage(),
+      "hydra:previousPage" : page.getPreviousPage()
     };
 
     var resultContext = {};
@@ -56,7 +56,7 @@ MongoDBConnector._getMongoConnectionsStream = function (page, request, cb) {
 
     var jsonldStream = new JSONLDStream(resultContext);
 
-    var connectionsStream = self._db.collection(self.collections['connections']).find({'departureTime': {'$gt' : page.start, '$lt' : page.end}}).sort({'departureTime':1}).stream({
+    var connectionsStream = self._db.collection(self.collections['connections']).find({'departureTime': {'$gt' : page.getInterval().start, '$lt' : page.getInterval().end}}).sort({'departureTime':1}).stream({
       transform: function(connection) {
         return connection;
       }
@@ -66,8 +66,8 @@ MongoDBConnector._getMongoConnectionsStream = function (page, request, cb) {
   });
 };
 
-MongoDBConnector.getConnectionsPage = function (page, request, cb) {
-  var stream = this._getMongoConnectionsStream(page, request, function (error, jsonldStream) {
+MongoDBConnector.getConnectionsPage = function (page, cb) {
+  var stream = this._getMongoConnectionsStream(page, function (error, jsonldStream) {
     if (error) {
       cb (error);
     } else {    
