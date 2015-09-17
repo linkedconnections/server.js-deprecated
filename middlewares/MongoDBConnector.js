@@ -58,6 +58,8 @@ MongoDBConnector._getMongoConnectionsStream = function (page, cb) {
 
     var connectionsStream = self._db.collection(self.collections['connections']).find({'departureTime': {'$gt' : page.getInterval().start, '$lt' : page.getInterval().end}}).sort({'departureTime':1}).stream({
       transform: function(connection) {
+        connection['@id'] = connection['_id'];
+        delete connection['_id'];
         return connection;
       }
     });
