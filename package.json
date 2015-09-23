@@ -7,6 +7,9 @@
     "type": "git",
     "url": "git@github.com:LinkedConnections/server.js.git"
   },
+  "bin" : {
+    "lcs" : "./bin/server.js"
+  },
   "bugs": {
     "url": "https://github.com/LinkedConnections/server.js/issues"
   },
