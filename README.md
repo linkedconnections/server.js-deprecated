@@ -29,7 +29,7 @@ Now you have two options:
 ```bash
 mongoimport --db lc --collection connections --file connections.jsonldstream
 #convert the times to ISO8601 for mongo
-mongo lc --eval 'db.connections.find().forEach(function(conn){conn["arrivalTime"] = new ISODate(conn["arrivalTime"]);conn["departureTime"] = new ISODate(conn["departureTime"]);db.connections.save(conn)});'
+mongo lc --eval 'db.connections.find({"@context": { "$exists": false}}).forEach(function(conn){conn["arrivalTime"] = new ISODate(conn["arrivalTime"]);conn["departureTime"] = new ISODate(conn["departureTime"]);db.connections.save(conn)});'
 ```
 
 Now, fill out your config.json with the right collections and mongodb connection string.
