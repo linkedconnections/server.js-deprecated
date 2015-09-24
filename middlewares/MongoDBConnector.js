@@ -1,5 +1,4 @@
-var MongoClient = require('mongodb').MongoClient,
-    JSONLDStream = require('../streams/JSONLDStream.js');
+var MongoClient = require('mongodb').MongoClient;
 
 var MongoDBConnector = function () {
   return function (req, res, next) {
@@ -7,6 +6,7 @@ var MongoDBConnector = function () {
     next();
   }
 }
+
 
 /**
  * Connect to the mongodb if not yet connected.
@@ -31,47 +31,40 @@ MongoDBConnector.connect = function (dbstring, collections, cb) {
   }
 };
 
+MongoDBConnector.context = function (callback) {
+  // Get context
+  this._db.collection(this.collections['connections']).find({'@context': { '$exists': true}}, {'_id': 0}).toArray(function(err, context) {
+    if (err) {
+      console.error(err);
+      callback(null);
+    } else if (context && context[0]) {
+      callback(context[0]);
+    } else {
+      console.error("No context found in collection");
+      callback(null);
+    }
+  });
+};
+
 /**
  * @param page is an object describing the page of the resource
  */
 MongoDBConnector._getMongoConnectionsStream = function (page, cb) {
   var self = this;
-
-  // Get context
-  this._db.collection(this.collections['connections']).find({ '@context' : { '$exists' : true} }, { _id: 0}).toArray(function(err, context) {
-    var metadata = {
-      "@id" : page.getCurrentPage(),
-      "hydra:nextPage" : page.getNextPage(),
-      "hydra:previousPage" : page.getPreviousPage()
-    };
-
-    var resultContext = {};
-    resultContext['@context'] = {};
-
-    // Add metadata
-    for(var key in metadata) resultContext['@context'][key]=metadata[key];
-
-    // Add rest of context
-    for(var key in context[0]['@context']) resultContext['@context'][key]=context[0]['@context'][key];
-
-    var jsonldStream = new JSONLDStream(resultContext);
-
-    var connectionsStream = self._db.collection(self.collections['connections']).find({'departureTime': {'$gt' : page.getInterval().start, '$lt' : page.getInterval().end}}).sort({'departureTime':1}).stream({
-      transform: function(connection) {
-        return connection;
-      }
-    });
-
-    cb(null, connectionsStream.pipe(jsonldStream));
-  });
+  // Get connections stream with context added
+  var connectionsStream = self._db.collection(self.collections['connections'])
+      .find({'departureTime': {'$gt': page.getInterval().start, '$lt': page.getInterval().end}})
+      .sort({'departureTime': 1})
+      .stream();
+  cb(null, connectionsStream);
 };
 
 MongoDBConnector.getConnectionsPage = function (page, cb) {
-  var stream = this._getMongoConnectionsStream(page, function (error, jsonldStream) {
+  var stream = this._getMongoConnectionsStream(page, function (error, connectionsStream) {
     if (error) {
       cb (error);
-    } else {    
-      cb(null, jsonldStream);
+    } else {
+      cb(null, connectionsStream);
     }
   });
 };
