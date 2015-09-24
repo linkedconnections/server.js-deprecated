@@ -2,6 +2,10 @@ var ConnectionsModel = function (db) {
   this._db = db;
 };
 
+ConnectionsModel.prototype.context = function (cb) {
+  this._db.context(cb);
+};
+
 ConnectionsModel.prototype.get = function (connectionid, cb) {
   this._db.getConnection(connectionid);
 };

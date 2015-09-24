@@ -14,7 +14,11 @@ module.exports = function (req, res, next) {
       end : new Date(dt.getTime() + 10 * 60000)
     };
   };
-  
+  this._base = req.locals.config.baseUri;
+  if (req.port) {
+    this._base += ':' + req.port;
+  }
+  var self = this;
   req.locals.page.getCorrectPageId = function (dt) {
     if (!dt) {
       dt = moment(req.query.departureTime);
@@ -26,24 +30,22 @@ module.exports = function (req, res, next) {
     var minutes = dt.minutes();
     minutes %= 10;
     dt.subtract(minutes, 'minutes');
-
-    //for now, just accept everything
     return dt.format("YYYY-MM-DDTHH:mm");
   };
 
   req.locals.page.getNextPage = function () {
     var dt = moment(req.query.departureTime);
-    return "http://localhost:8080/connections/?departureTime=" + dt.add(10, "minutes").format("YYYY-MM-DDTHH:mm");
+    return self._base + "/connections/?departureTime=" + dt.add(10, "minutes").format("YYYY-MM-DDTHH:mm");
   }
   
   req.locals.page.getPreviousPage = function () {
     var dt = moment(req.query.departureTime);
-    return "http://localhost:8080/connections/?departureTime=" + dt.subtract(10, "minutes").format("YYYY-MM-DDTHH:mm");
+    return self._base + "/connections/?departureTime=" + dt.subtract(10, "minutes").format("YYYY-MM-DDTHH:mm");
   }
 
   req.locals.page.getCurrentPage = function () {
     var dt = moment(req.query.departureTime);
-    return "http://localhost:8080/connections/?departureTime=" + dt.format("YYYY-MM-DDTHH:mm");
+    return self._base + "/connections/?departureTime=" + dt.format("YYYY-MM-DDTHH:mm");
   }
   
   next();
