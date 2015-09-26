@@ -40,6 +40,16 @@ Now, fill out your config.json with the right collections and mongodb connection
  2. Use [arrdep2connections](https://github.com/linkedconnections/arrdep2connections) to convert arrivals/departures into connections and stream directly into MongoDB by using ```--mongodb``` width [the command](https://github.com/linkedconnections/arrdep2connections).
  3. Fill out config.json accordingly
 
+### Load stops in MongoDB
+
+Unzip your GTFS feed and load ```stops.txt``` directly into MongoDB.
+
+You can use following command based on ```example-config.json```:
+
+```bash
+mongoimport --host=127.0.0.1 -d gtfs -c stations --type csv --file path/to/gtfs/stops.txt --headerline
+```
+
 ### Start the server
 
 ```bash

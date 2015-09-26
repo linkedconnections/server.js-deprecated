@@ -1,4 +1,5 @@
-var MongoClient = require('mongodb').MongoClient;
+var MongoClient = require('mongodb').MongoClient,
+    fs = require('fs');
 
 var MongoDBConnector = function () {
   return function (req, res, next) {
@@ -31,7 +32,10 @@ MongoDBConnector.connect = function (dbstring, collections, cb) {
   }
 };
 
-MongoDBConnector.context = function (callback) {
+////////////////////////////////////////
+// Methods for retrieving connections //
+////////////////////////////////////////
+MongoDBConnector.connectionsContext = function (callback) {
   // Get context
   this._db.collection(this.collections['connections']).find({'@context': { '$exists': true}}, {'_id': 0}).toArray(function(err, context) {
     if (err) {
@@ -76,8 +80,54 @@ MongoDBConnector.getConnectionsPage = function (page, cb) {
   });
 };
 
-MongoDBConnector.getStops = function (cb) {
-  this._db.collection(this.collections['stations']).find().toArray(cb);
+////////////////////////////////////////
+// Methods for retrieving stops       //
+////////////////////////////////////////
+MongoDBConnector.stopsContext = function (callback) {
+  callback(null);
+};
+
+/**
+ * @param page is an object describing the page of the resource
+ */
+MongoDBConnector._getMongoStopsStream = function (page, cb) {
+  var self = this;
+
+  // Use page to retrieve interval [offset, offset+limit]
+  var options = {
+    'limit': parseInt(page.getLimit()),
+    'skip': parseInt(page.getOffset()),
+    'sort': 'stop_name'
+  };
+  
+  var stopsStream = self._db.collection(self.collections['stops'])
+      .find({}, options)
+      .stream({
+        transform: function(stop) {
+          stop['@id'] = stop['stop_id'];
+          delete stop['_id'];
+          return stop;
+        }
+      });
+  cb(null, stopsStream);
+};
+
+MongoDBConnector.getStopsPage = function (page, cb) {
+  var stream = this._getMongoStopsStream(page, function (error, stopsStream) {
+    if (error) {
+      cb (error);
+    } else {
+      cb(null, stopsStream);
+    }
+  });
+};
+
+MongoDBConnector.getStop = function (stopid, cb) {
+
+}
+
+MongoDBConnector.addStop = function (stop, cb) {
+
 };
 
 module.exports = MongoDBConnector;
