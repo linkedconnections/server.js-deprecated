@@ -63,15 +63,8 @@ server.get('/', function (req, res, next) {
   next();
 });
 
-server.get('/stops/', StopsController);
-server.get('/stops/', function (req, res, next) {
-  if (req.query.offset) {
-    res.redirect(302,'/stops/?offset=' + req.locals.stopsPage.getCorrectPageId(req.query.offset)); 
-  } else {
-    res.redirect(302, '/stops/');
-  }
-  next();
-});
+server.get('/stops/', StopsController.list);
+server.get('/stops/:stopId', StopsController.single);
 
 //5. If an error occured somewhere in the flow, handle it here
 server.use(ErrorHandler);

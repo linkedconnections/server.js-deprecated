@@ -8,7 +8,6 @@ var MongoDBConnector = function () {
   }
 }
 
-
 /**
  * Connect to the mongodb if not yet connected.
  * @param dbstring defines the mongoclient string to connect to mongodb
@@ -99,12 +98,12 @@ MongoDBConnector._getMongoStopsStream = function (page, cb) {
     'skip': parseInt(page.getOffset()),
     'sort': 'stop_name'
   };
-  
+
   var stopsStream = self._db.collection(self.collections['stops'])
       .find({}, options)
       .stream({
         transform: function(stop) {
-          stop['@id'] = stop['stop_id'];
+          stop['@id'] = page.getBase() + '/stops/' + stop['stop_id'];
           delete stop['_id'];
           return stop;
         }
@@ -122,8 +121,20 @@ MongoDBConnector.getStopsPage = function (page, cb) {
   });
 };
 
-MongoDBConnector.getStop = function (stopid, cb) {
-
+MongoDBConnector.getStop = function (stopId, cb) {
+  // Get stop
+  var stream = this._db.collection(this.collections['stops']).find({'stop_id': { "$eq" : parseInt(stopId)}}, {'_id': 0}).stream(); // toArray(function(err, stop) {
+  //   if (err) {
+  //     console.error(err);
+  //     cb(null);
+  //   } else if (stop && stop[0]) {
+  //     cb(stop[0]);
+  //   } else {
+  //     console.error("No stop found in collection with corresponding stopId");
+  //     cb(null);
+  //   }
+  // });
+  cb(null, stream)
 }
 
 MongoDBConnector.addStop = function (stop, cb) {
