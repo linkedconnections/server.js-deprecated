@@ -10,8 +10,12 @@ StopsModel.prototype.context = function (cb) {
   cb(context);
 };
 
-StopsModel.prototype.get = function (stopid, cb) {
-  this._db.getStop(stopid, cb);
+StopsModel.prototype.getStopById = function (stopId, cb) {
+  this._db.getStopById(stopId, cb);
+};
+
+StopsModel.prototype.getStopsByName = function (stopName, cb) {
+  this._db.getStopsByName(stopName, cb);
 };
 
 StopsModel.prototype.getPage = function (page, cb) {

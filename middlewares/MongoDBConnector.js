@@ -121,20 +121,34 @@ MongoDBConnector.getStopsPage = function (page, cb) {
   });
 };
 
-MongoDBConnector.getStop = function (stopId, cb) {
+MongoDBConnector.getStopById = function (stopId, cb) {
   // Get stop
-  var stream = this._db.collection(this.collections['stops']).find({'stop_id': { "$eq" : parseInt(stopId)}}, {'_id': 0}).stream(); // toArray(function(err, stop) {
-  //   if (err) {
-  //     console.error(err);
-  //     cb(null);
-  //   } else if (stop && stop[0]) {
-  //     cb(stop[0]);
-  //   } else {
-  //     console.error("No stop found in collection with corresponding stopId");
-  //     cb(null);
-  //   }
-  // });
-  cb(null, stream)
+  var stream = this._db.collection(this.collections['stops']).find({'stop_id': { "$eq" : parseInt(stopId)}}, {'_id': 0}).stream();
+  
+  cb(null, stream);
+}
+
+MongoDBConnector.getStopsByName = function (stopName, cb) {
+  // Create index for stops search
+  this._db.collection(this.collections['stops']).createIndex({ stop_name : 'text'}, function(err) {
+    if (err) {
+      console.error(err);
+    }
+  });
+
+  var stopsStream = this._db.collection(this.collections['stops'])
+      .find(
+        { "$text": { "$search": stopName }}
+        , {fields: {_id: false, score: {"$meta": 'textScore'}}})
+      .sort({score: {"$meta": 'textScore'}})
+      .stream({
+        transform: function(stop) {
+          delete stop['_id'];
+          return stop;
+        }
+      });
+
+  cb(null, stopsStream);
 }
 
 MongoDBConnector.addStop = function (stop, cb) {

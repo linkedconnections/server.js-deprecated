@@ -7,8 +7,8 @@
     "type": "git",
     "url": "git@github.com:LinkedConnections/server.js.git"
   },
-  "bin" : {
-    "lcs" : "./bin/server.js"
+  "bin": {
+    "lcs": "./bin/server.js"
   },
   "bugs": {
     "url": "https://github.com/LinkedConnections/server.js/issues"
@@ -31,6 +31,7 @@
     "n3": "~0.4.1",
     "negotiate": "~1.0.1",
     "request": "~2.51.0",
+    "through2": "^2.0.0",
     "uritemplate": "~0.3.4"
   }
 }
