@@ -18,6 +18,10 @@ StopsModel.prototype.getStopsByName = function (stopName, cb) {
   this._db.getStopsByName(stopName, cb);
 };
 
+StopsModel.prototype.getStopsByLatLng = function (lat, lon, distance, cb) {
+  this._db.getStopsByLatLng(lat, lon, distance, cb);
+}
+
 StopsModel.prototype.getPage = function (page, cb) {
   this._db.getStopsPage(page, cb);
 };

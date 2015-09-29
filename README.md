@@ -47,7 +47,8 @@ Unzip your GTFS feed and load ```stops.txt``` directly into MongoDB.
 You can use following command based on ```example-config.json```:
 
 ```bash
-mongoimport --host=127.0.0.1 -d gtfs -c stations --type csv --file path/to/gtfs/stops.txt --headerline
+mongoimport --host=127.0.0.1 -d lc -c stations --type csv --file path/to/gtfs/stops.txt --headerline
+mongo lc --eval 'db.stations.find().forEach(function(stop){ db.stations.update({_id:stop._id}, {$set:{"loc": { type : "Point", coordinates : [stop.stop_lon, stop.stop_lat] }}}) });'
 ```
 
 ### Start the server

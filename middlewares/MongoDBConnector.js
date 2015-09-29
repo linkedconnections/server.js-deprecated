@@ -151,6 +151,38 @@ MongoDBConnector.getStopsByName = function (stopName, cb) {
   cb(null, stopsStream);
 }
 
+MongoDBConnector.getStopsByLatLng = function(lon, lat, radiusInMetres, cb) {
+  var metresToRadian = function (metres) {
+    var earthRadiusInMetres = 6378137;
+    return metres / earthRadiusInMetres;
+  };
+
+  // Create 2dsphere index for proximity locating
+  this._db.collection(this.collections['stops']).ensureIndex( { loc : "2dsphere" }, function(error) {
+    if (error) {
+      console.error(error);
+    }
+  });
+
+  var coordinates = [ parseFloat(lon), parseFloat(lat) ];
+
+  var stopsStream = this._db.collection(this.collections['stops'])
+      .find({
+        "loc": { 
+          $geoWithin: { 
+            $centerSphere: [ coordinates , metresToRadian(radiusInMetres) ] 
+          } 
+        } 
+      }).stream({
+        transform: function(stop) {
+          delete stop['_id'];
+          return stop;
+        }
+      });
+
+  cb(null, stopsStream);
+}
+
 MongoDBConnector.addStop = function (stop, cb) {
 
 };
