@@ -57,6 +57,17 @@ mongo lc --eval 'db.stations.find().forEach(function(stop){ db.stations.update({
 nodejs server.js
 ```
 
+## API Endpoints
+
+Example URL  | Parameters
+-------------|-----------
+`GET http://localhost:8080/connections` | none required
+`GET http://localhost:8080/connections?departureTime=2015-09-29T14:20` | `departureTime` is minimum departure time of connections
+`GET http://localhost:8080/stops` | none required
+`GET http://localhost:8080/stops?offset=100` | `offset` is startpoint of stops page
+`GET http://localhost:8080/stops?latlng=50.83894,4.373676&radius=3000` | `latlng` is a pair of latitude and longitude (separated by commas); `radius` is radius of search in meters (if not specified, defaults to 1000 meter)
+`GET http://localhost:8080/stops?bbox=50.7764,4.2214,50.9220,4.4879` | `bbox` is a search bounding box with southwest latitude, southwest longitude, northeast latitude, northeast longitude (separated by commas). TODO
+
 ## Background
 
 On today's Web, public transport datasets are disseminated in different ways, which include [GTFS zip files](http://gtfs.org) and route planning as a service APIs (such as [navitia.io](http://navitia.io/the-api.php), the [Dutch railways](http://www.ns.nl/api/home) and many others). In the first case, the dataset is to be downloaded entirely, and routes are intended to be computed locally. Both server as client need to do a considerable amount of work in order to update the data. In the second case, one server handles all possible questions from end-users, but it's hardly possible to combine different APIs to form intermodal routes taking into account all the end-user's requirements.
