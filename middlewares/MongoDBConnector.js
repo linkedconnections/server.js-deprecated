@@ -25,6 +25,21 @@ MongoDBConnector.connect = function (dbstring, collections, cb) {
       if (err) {
         cb('Error connecting to the db: ' + err);
       }
+
+      // Create 2dsphere index for proximity locating
+      db.collection(collections['stops']).ensureIndex( { loc : '2dsphere' }, function(error) {
+        if (error) {
+          console.error(error);
+        }
+      });
+
+       // Create index for stops search
+      db.collection(collections['stops']).createIndex({ stop_name : 'text'}, function(err) {
+        if (err) {
+          console.error(err);
+        }
+      });
+
       self._db = db;
       cb();
     });
@@ -129,13 +144,6 @@ MongoDBConnector.getStopById = function (stopId, cb) {
 }
 
 MongoDBConnector.getStopsByName = function (stopName, cb) {
-  // Create index for stops search
-  this._db.collection(this.collections['stops']).createIndex({ stop_name : 'text'}, function(err) {
-    if (err) {
-      console.error(err);
-    }
-  });
-
   var stopsStream = this._db.collection(this.collections['stops'])
       .find(
         { "$text": { "$search": stopName }}
@@ -157,13 +165,6 @@ MongoDBConnector.getStopsByLatLng = function(lon, lat, radiusInMetres, cb) {
     return metres / earthRadiusInMetres;
   };
 
-  // Create 2dsphere index for proximity locating
-  this._db.collection(this.collections['stops']).ensureIndex( { loc : "2dsphere" }, function(error) {
-    if (error) {
-      console.error(error);
-    }
-  });
-
   var coordinates = [ parseFloat(lon), parseFloat(lat) ];
 
   var stopsStream = this._db.collection(this.collections['stops'])
@@ -171,6 +172,26 @@ MongoDBConnector.getStopsByLatLng = function(lon, lat, radiusInMetres, cb) {
         "loc": { 
           $geoWithin: { 
             $centerSphere: [ coordinates , metresToRadian(radiusInMetres) ] 
+          } 
+        } 
+      }).stream({
+        transform: function(stop) {
+          delete stop['_id'];
+          return stop;
+        }
+      });
+
+  cb(null, stopsStream);
+}
+
+MongoDBConnector.getStopsByBBox = function (swlon, swlat, nelon, nelat, cb) {
+  var bBox = [[ parseFloat(swlon), parseFloat(swlat) ], [ parseFloat(nelon), parseFloat(nelat) ]];
+
+  var stopsStream = this._db.collection(this.collections['stops'])
+      .find({
+        "loc": { 
+          $within: { 
+            $box: bBox
           } 
         } 
       }).stream({

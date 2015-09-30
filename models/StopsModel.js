@@ -22,6 +22,10 @@ StopsModel.prototype.getStopsByLatLng = function (lat, lon, distance, cb) {
   this._db.getStopsByLatLng(lat, lon, distance, cb);
 }
 
+StopsModel.prototype.getStopsByBBox = function (swlon, swlat, nelon, nelat, cb) {
+  this._db.getStopsByBBox(swlon, swlat, nelon, nelat, cb);
+}
+
 StopsModel.prototype.getPage = function (page, cb) {
   this._db.getStopsPage(page, cb);
 };
