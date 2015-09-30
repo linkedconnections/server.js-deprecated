@@ -1,7 +1,7 @@
 {
   "source" : {
     "type" : "mongodb",
-    "string" : "mongodb://localhost:27017/gtfs",
+    "string" : "mongodb://localhost:27017/lc",
     "collections" : {
       "connections" : "connections",
       "stops" : "stations"

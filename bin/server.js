@@ -3,9 +3,11 @@
 var express = require('express'),
     logger = require('morgan'),
     dbconnector = require('../middlewares/MongoDBConnector'), //TODO: check type
-    Paginator = require('../middlewares/Paginator'),
+    ConnectionsPaginator = require('../middlewares/ConnectionsPaginator'),
+    StopsPaginator = require('../middlewares/StopsPaginator'),
     ContextController = require('../controllers/ContextController'),
     ConnectionsController = require('../controllers/ConnectionsController'),
+    StopsController = require('../controllers/StopsController'),
     ErrorHandler = require('../middlewares/ErrorHandler'),
     compress = require('compression'),
     fs = require('fs'),
@@ -45,20 +47,24 @@ server.use(function (req, res, next) {
 server.use(logger('combined'));
 //2. If we encounter a static file (such as a favicon, css files, images...), return it immediately
 server.use(express.static(__dirname + '../public'));
-//3. Add the paginator middleware
-server.use(Paginator);
+//3. Add the paginator middleware for connections and stops
+server.use(ConnectionsPaginator);
+server.use(StopsPaginator);
 //4. Output json-ld: send metadata about the request as the data itself
 server.get('/:type(connections|stops)/context.json', ContextController);
 server.get('/connections/', ConnectionsController);
 //Or redirect when we're on the homepage
 server.get('/', function (req, res, next) {
   if (req.query.departureTime) {
-    res.redirect(302,'/connections/?departureTime=' + req.locals.page.getCorrectPageId(req.query.departureTime)); 
+    res.redirect(302,'/connections/?departureTime=' + req.locals.connectionsPage.getCorrectPageId(req.query.departureTime)); 
   } else {
     res.redirect(302, '/connections/');
   }
   next();
 });
+
+server.get('/stops/', StopsController.list);
+server.get('/stops/:stopId', StopsController.single);
 
 //5. If an error occured somewhere in the flow, handle it here
 server.use(ErrorHandler);
