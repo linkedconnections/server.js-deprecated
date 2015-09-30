@@ -66,7 +66,7 @@ Example URL  | Parameters
 `GET http://localhost:8080/stops` | none required
 `GET http://localhost:8080/stops?offset=100` | `offset` is startpoint of stops page
 `GET http://localhost:8080/stops?latlng=50.83894,4.373676&radius=3000` | `latlng` is a pair of latitude and longitude (separated by commas); `radius` is radius of search in meters (if not specified, defaults to 1000 meter)
-`GET http://localhost:8080/stops?bbox=50.7764,4.2214,50.9220,4.4879` | `bbox` is a search bounding box with southwest latitude, southwest longitude, northeast latitude, northeast longitude (separated by commas). TODO
+`GET http://localhost:8080/stops?bbox=50.7764,4.2214,50.9220,4.4879` | `bbox` is a search bounding box with southwest latitude, southwest longitude, northeast latitude, northeast longitude (separated by commas).
 
 ## Background
 
