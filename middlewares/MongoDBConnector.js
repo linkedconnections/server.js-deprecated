@@ -7,7 +7,6 @@ var MongoDBConnector = function () {
   }
 }
 
-
 /**
  * Connect to the mongodb if not yet connected.
  * @param dbstring defines the mongoclient string to connect to mongodb
@@ -50,9 +49,7 @@ MongoDBConnector.context = function (callback) {
  * @param page is an object describing the page of the resource
  */
 MongoDBConnector._getMongoConnectionsStream = function (page, cb) {
-  var self = this;
-  // Get connections stream with context added
-  var connectionsStream = self._db.collection(self.collections['connections'])
+  var connectionsStream = this._db.collection(this.collections['connections'])
       .find({'departureTime': {'$gt': page.getInterval().start, '$lt': page.getInterval().end}})
       .sort({'departureTime': 1})
       .stream();

@@ -15,8 +15,20 @@ module.exports = function (request, response, next) {
     var view = new JSONLDView({
       "@context" : request.locals.config.baseUri + "/connections/context.json",
       "@id" : request.locals.page.getCurrentPage(),
+      "@type" : "hydra:PagedCollection",
       "hydra:nextPage" : request.locals.page.getNextPage(),
-      "hydra:previousPage" : request.locals.page.getPreviousPage()
+      "hydra:previousPage" : request.locals.page.getPreviousPage(),
+      "hydra:search" : {
+        "@type" : "hydra:IriTemplate",
+        "hydra:template" : request.locals.config.baseUri + "/connections/{?departureTime}",
+        "hydra:variableRepresentation" : "hydra:BasicRepresentation",
+        "hydra:mapping" : {
+          "@type" : "hydra:IriTemplateMapping",
+          "hydra:variable" : "departureTime",
+          "hydra:required" : true,
+          "hydra:property" : "http://semweb.mmlab.be/ns/linkedconnections#departureTimeQuery"
+        }
+      }
     });
     
     //3. Stream output when the graph is being generated

@@ -8,8 +8,7 @@ var express = require('express'),
     ConnectionsController = require('../controllers/ConnectionsController'),
     ErrorHandler = require('../middlewares/ErrorHandler'),
     compress = require('compression'),
-    fs = require('fs'),
-    MongoClient = require('mongodb').MongoClient;
+    fs = require('fs');
 
 var config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 config.baseUri = "http://localhost:" + config.port
