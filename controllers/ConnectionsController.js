@@ -15,18 +15,18 @@ module.exports = function (request, response, next) {
     var view = new JSONLDView({
       "@context" : request.locals.config.baseUri + "/connections/context.json",
       "@id" : request.locals.page.getCurrentPage(),
-      "@type" : "hydra:PagedCollection",
-      "hydra:nextPage" : request.locals.page.getNextPage(),
-      "hydra:previousPage" : request.locals.page.getPreviousPage(),
-      "hydra:search" : {
-        "@type" : "hydra:IriTemplate",
-        "hydra:template" : request.locals.config.baseUri + "/connections/{?departureTime}",
-        "hydra:variableRepresentation" : "hydra:BasicRepresentation",
-        "hydra:mapping" : {
-          "@type" : "hydra:IriTemplateMapping",
-          "hydra:variable" : "departureTime",
-          "hydra:required" : true,
-          "hydra:property" : "http://semweb.mmlab.be/ns/linkedconnections#departureTimeQuery"
+      "@type" : "PagedCollection",
+      "nextPage" : request.locals.page.getNextPage(),
+      "previousPage" : request.locals.page.getPreviousPage(),
+      "search" : {
+        "@type" : "IriTemplate",
+        "template" : request.locals.config.baseUri + "/connections/{?departureTime}",
+        "variableRepresentation" : "BasicRepresentation",
+        "mapping" : {
+          "@type" : "IriTemplateMapping",
+          "variable" : "departureTime",
+          "required" : true,
+          "property" : "http://semweb.mmlab.be/ns/linkedconnections#departureTimeQuery"
         }
       }
     });
