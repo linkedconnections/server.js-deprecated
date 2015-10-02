@@ -35,7 +35,7 @@ server.use(function (req, res, next) {
     req.locals = {};
   }
   req.locals.config = config;
-  res.header('Access-Control-Allow-Origin', 'http://localhost');
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods','GET');
   res.header('Access-Control-Allow-Credentials', true);
   next();
