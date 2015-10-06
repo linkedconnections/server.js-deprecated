@@ -50,7 +50,7 @@ MongoDBConnector.context = function (callback) {
  */
 MongoDBConnector._getMongoConnectionsStream = function (page, cb) {
   var connectionsStream = this._db.collection(this.collections['connections'])
-      .find({'departureTime': {'$gt': page.getInterval().start, '$lt': page.getInterval().end}})
+      .find({'departureTime': {'$gte': page.getInterval().start, '$lt': page.getInterval().end}})
       .sort({'departureTime': 1})
       .stream();
   cb(null, connectionsStream);
