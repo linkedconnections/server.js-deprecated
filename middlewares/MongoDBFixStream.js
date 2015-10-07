@@ -8,13 +8,11 @@ function MongoDBFixStream () {
 }
 
 MongoDBFixStream.prototype._transform = function (object, encoding, done) {
-  if (object["@id"]) {
-    delete(object["_id"]);
-    done(null, object);
-  } else {
+  if (!object["@id"]) {
     object["@id"] = object["_id"];
-    done(null, object);
   }
+  delete(object["_id"]);
+  done(null, object);
 }
 
 module.exports = MongoDBFixStream;
