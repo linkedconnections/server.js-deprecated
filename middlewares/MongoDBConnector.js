@@ -1,5 +1,5 @@
-var MongoClient = require('mongodb').MongoClient;
-
+var MongoClient = require('mongodb').MongoClient,
+    MongoDBFixStream = require('./MongoDBFixStream');
 var MongoDBConnector = function () {
   return function (req, res, next) {
     req.db = MongoDBConnector;
@@ -52,7 +52,7 @@ MongoDBConnector._getMongoConnectionsStream = function (page, cb) {
   var connectionsStream = this._db.collection(this.collections['connections'])
       .find({'departureTime': {'$gte': page.getInterval().start, '$lt': page.getInterval().end}})
       .sort({'departureTime': 1})
-      .stream();
+      .stream().pipe(new MongoDBFixStream());
   cb(null, connectionsStream);
 };
 
