@@ -1,8 +1,8 @@
 {
-  "name": "linkedconnections-server",
-  "version": "0.0.0",
+  "name": "lc-server",
+  "version": "0.0.1",
   "description": "A nodejs/express implementation of a Linked Connections server",
-  "main": "server.js",
+  "main": "bin/server.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:LinkedConnections/server.js.git"
