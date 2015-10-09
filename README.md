@@ -29,7 +29,7 @@ Now you have two options:
 ```bash
 mongoimport --db lc --collection connections --file connections.jsonldstream
 #convert the times to ISO8601 for mongo
-mongo lc --eval 'db.connections.find().forEach(function(conn){conn["arrivalTime"] = new ISODate(conn["arrivalTime"]);conn["departureTime"] = new ISODate(conn["departureTime"]);db.connections.save(conn)});'
+mongo lc --eval 'db.connections.find({"@context": { "$exists": false}}).forEach(function(conn){conn["arrivalTime"] = new ISODate(conn["arrivalTime"]);conn["departureTime"] = new ISODate(conn["departureTime"]);db.connections.save(conn)});'
 ```
 
 Now, fill out your config.json with the right collections and mongodb connection string.
@@ -40,11 +40,33 @@ Now, fill out your config.json with the right collections and mongodb connection
  2. Use [arrdep2connections](https://github.com/linkedconnections/arrdep2connections) to convert arrivals/departures into connections and stream directly into MongoDB by using ```--mongodb``` width [the command](https://github.com/linkedconnections/arrdep2connections).
  3. Fill out config.json accordingly
 
+### Load stops in MongoDB
+
+Unzip your GTFS feed and load ```stops.txt``` directly into MongoDB.
+
+You can use following command based on ```example-config.json```:
+
+```bash
+mongoimport --host=127.0.0.1 -d lc -c stations --type csv --file path/to/gtfs/stops.txt --headerline
+mongo lc --eval 'db.stations.find().forEach(function(stop){ db.stations.update({_id:stop._id}, {$set:{"loc": { type : "Point", coordinates : [stop.stop_lon, stop.stop_lat] }}}) });'
+```
+
 ### Start the server
 
 ```bash
 nodejs server.js
 ```
+
+## API Endpoints
+
+Example URL  | Parameters
+-------------|-----------
+`GET http://localhost:8080/connections` | none required
+`GET http://localhost:8080/connections?departureTime=2015-09-29T14:20` | `departureTime` is minimum departure time of connections
+`GET http://localhost:8080/stops` | none required
+`GET http://localhost:8080/stops?offset=100` | `offset` is startpoint of stops page
+`GET http://localhost:8080/stops?latlng=50.83894,4.373676&radius=3000` | `latlng` is a pair of latitude and longitude (separated by commas); `radius` is radius of search in meters (if not specified, defaults to 1000 meter)
+`GET http://localhost:8080/stops?bbox=50.7764,4.2214,50.9220,4.4879` | `bbox` is a search bounding box with southwest latitude, southwest longitude, northeast latitude, northeast longitude (separated by commas).
 
 ## Background
 

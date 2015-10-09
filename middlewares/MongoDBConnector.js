@@ -1,5 +1,6 @@
 var MongoClient = require('mongodb').MongoClient,
     MongoDBFixStream = require('./MongoDBFixStream');
+
 var MongoDBConnector = function () {
   return function (req, res, next) {
     req.db = MongoDBConnector;
@@ -24,13 +25,31 @@ MongoDBConnector.connect = function (dbstring, collections, cb) {
       if (err) {
         cb('Error connecting to the db: ' + err);
       }
+
+      // Create 2dsphere index for proximity locating
+      db.collection(collections['stops']).ensureIndex( { loc : '2dsphere' }, function(error) {
+        if (error) {
+          console.error(error);
+        }
+      });
+
+       // Create index for stops search
+      db.collection(collections['stops']).createIndex({ stop_name : 'text'}, function(err) {
+        if (err) {
+          console.error(err);
+        }
+      });
+
       self._db = db;
       cb();
     });
   }
 };
 
-MongoDBConnector.context = function (callback) {
+////////////////////////////////////////
+// Methods for retrieving connections //
+////////////////////////////////////////
+MongoDBConnector.connectionsContext = function (callback) {
   // Get context
   this._db.collection(this.collections['connections']).find({'@context': { '$exists': true}}, {'_id': 0}).toArray(function(err, context) {
     if (err) {
@@ -66,8 +85,118 @@ MongoDBConnector.getConnectionsPage = function (page, cb) {
   });
 };
 
-MongoDBConnector.getStops = function (cb) {
-  this._db.collection(this.collections['stations']).find().toArray(cb);
+////////////////////////////////////////
+// Methods for retrieving stops       //
+////////////////////////////////////////
+MongoDBConnector.stopsContext = function (callback) {
+  callback(null);
+};
+
+/**
+ * @param page is an object describing the page of the resource
+ */
+MongoDBConnector._getMongoStopsStream = function (page, cb) {
+  var self = this;
+
+  // Use page to retrieve interval [offset, offset+limit]
+  var options = {
+    'limit': parseInt(page.getLimit()),
+    'skip': parseInt(page.getOffset()),
+    'sort': 'stop_name'
+  };
+
+  var stopsStream = self._db.collection(self.collections['stops'])
+      .find({}, options)
+      .stream({
+        transform: function(stop) {
+          stop['@id'] = page.getBase() + '/stops/' + stop['stop_id'];
+          delete stop['_id'];
+          return stop;
+        }
+      });
+  cb(null, stopsStream);
+};
+
+MongoDBConnector.getStopsPage = function (page, cb) {
+  var stream = this._getMongoStopsStream(page, function (error, stopsStream) {
+    if (error) {
+      cb (error);
+    } else {
+      cb(null, stopsStream);
+    }
+  });
+};
+
+MongoDBConnector.getStopById = function (stopId, cb) {
+  // Get stop
+  var stream = this._db.collection(this.collections['stops']).find({'stop_id': { "$eq" : parseInt(stopId)}}, {'_id': 0}).stream();
+  
+  cb(null, stream);
+}
+
+MongoDBConnector.getStopsByName = function (stopName, cb) {
+  var stopsStream = this._db.collection(this.collections['stops'])
+      .find(
+        { "$text": { "$search": stopName }}
+        , {fields: {_id: false, score: {"$meta": 'textScore'}}})
+      .sort({score: {"$meta": 'textScore'}})
+      .stream({
+        transform: function(stop) {
+          delete stop['_id'];
+          return stop;
+        }
+      });
+
+  cb(null, stopsStream);
+}
+
+MongoDBConnector.getStopsByLatLng = function(lon, lat, radiusInMetres, cb) {
+  var metresToRadian = function (metres) {
+    var earthRadiusInMetres = 6378137;
+    return metres / earthRadiusInMetres;
+  };
+
+  var coordinates = [ parseFloat(lon), parseFloat(lat) ];
+
+  var stopsStream = this._db.collection(this.collections['stops'])
+      .find({
+        "loc": { 
+          $geoWithin: { 
+            $centerSphere: [ coordinates , metresToRadian(radiusInMetres) ] 
+          } 
+        } 
+      }).stream({
+        transform: function(stop) {
+          delete stop['_id'];
+          return stop;
+        }
+      });
+
+  cb(null, stopsStream);
+}
+
+MongoDBConnector.getStopsByBBox = function (swlon, swlat, nelon, nelat, cb) {
+  var bBox = [[ parseFloat(swlon), parseFloat(swlat) ], [ parseFloat(nelon), parseFloat(nelat) ]];
+
+  var stopsStream = this._db.collection(this.collections['stops'])
+      .find({
+        "loc": { 
+          $within: { 
+            $box: bBox
+          } 
+        } 
+      }).stream({
+        transform: function(stop) {
+          delete stop['_id'];
+          return stop;
+        }
+      });
+
+  cb(null, stopsStream);
+}
+
+MongoDBConnector.addStop = function (stop, cb) {
+
 };
 
 module.exports = MongoDBConnector;

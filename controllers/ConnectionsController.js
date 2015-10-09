@@ -32,7 +32,7 @@ module.exports = function (request, response, next) {
     });
     
     //3. Stream output when the graph is being generated
-    connections.getPage(request.locals.page, function (error, connectionsStream) {
+    connections.getPage(request.locals.connectionsPage, function (error, connectionsStream) {
       if (error) {
         next(error);
       } else {
