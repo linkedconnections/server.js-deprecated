@@ -3,19 +3,19 @@ var ConnectionsModel = function (db) {
 };
 
 ConnectionsModel.prototype.context = function (cb) {
-  this._db.context(cb);
+  this._db.connectionsContext(cb);
 };
 
 ConnectionsModel.prototype.get = function (connectionid, cb) {
   this._db.getConnection(connectionid);
 };
 
-ConnectionsModel.prototype.getPage = function (page, request, cb) {
-  this._db.getConnectionsPage(page, request, cb);
+ConnectionsModel.prototype.getPage = function (page, cb) {
+  this._db.getConnectionsPage(page, cb);
 };
 
 ConnectionsModel.prototype.create = function (connection, cb) {
-  this._db.add(connection);
+  this._db.addConnection(connection);
 };
 
 module.exports = ConnectionsModel;

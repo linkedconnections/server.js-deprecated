@@ -1,0 +1,21 @@
+{
+  "@context" : {
+    "hydra" : "http://www.w3.org/ns/hydra/core#",
+    "dct" : "http://purl.org/dc/terms/",
+    "xsd" : "http://www.w3.org/2001/XMLSchema#",
+    "rdfs" : "http://www.w3.org/2000/01/rdf-schema#",
+    "gtfs" : "http://vocab.gtfs.org/terms#",
+    "stop_id" : "xsd:integer",
+    "stop_code" : "gtfs:code",
+    "stop_name" : "http://xmlns.com/foaf/0.1/name",
+    "stop_desc" : "dct:description",
+    "stop_lat" : "https://schema.org/latitude",
+    "stop_lon" : "https://schema.org/longitude",
+    "zone_id" : "gtfs:zone",
+    "stop_url" : "rdfs:seeAlso",
+    "location_type" : "xsd:integer",
+    "parent_station" : "gtfs:parentStation",
+    "stop_timezone" : "gtfs:timeZone",
+    "wheelchair_boarding" : "gtfs:wheelchairAccessible"
+  }
+}
