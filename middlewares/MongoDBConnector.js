@@ -31,18 +31,7 @@ MongoDBConnector.connect = function (dbstring, collections, cb) {
 };
 
 MongoDBConnector.context = function (callback) {
-  // Get context
-  this._db.collection(this.collections['connections']).find({'@context': { '$exists': true}}, {'_id': 0}).toArray(function(err, context) {
-    if (err) {
-      console.error(err);
-      callback(null);
-    } else if (context && context[0]) {
-      callback(context[0]);
-    } else {
-      console.error("No context found in collection");
-      callback(null);
-    }
-  });
+  callback({"@context" : { "lc" : "http://semweb.mmlab.be/ns/linkedconnections#", "gtfs" : "http://vocab.gtfs.org/terms#", "Connection" : "http://semweb.mmlab.be/ns/linkedconnections#Connection", "dct" : "http://purl.org/dc/terms/", "date" : "dct:date", "arrivalTime" : "lc:arrivalTime", "departureTime" : "lc:departureTime", "arrivalStop" : { "@type" : "@id", "@id" : "http://semweb.mmlab.be/ns/linkedconnections#arrivalStop" }, "departureStop" : { "@type" : "@id", "@id" : "http://semweb.mmlab.be/ns/linkedconnections#departureStop" }, "trip" : { "@type" : "@id", "@id" : "gtfs:trip" }, "route" : { "@type" : "@id", "@id" : "gtfs:route" }, "headsign" : "gtfs:headsign" }});
 };
 
 /**
