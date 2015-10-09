@@ -7,6 +7,9 @@
     "type": "git",
     "url": "git@github.com:LinkedConnections/server.js.git"
   },
+  "scripts": {
+    "start": "node ./bin/server.js"
+  },
   "bin" : {
     "lcs" : "./bin/server.js"
   },
