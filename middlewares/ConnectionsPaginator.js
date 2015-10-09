@@ -35,17 +35,17 @@ module.exports = function (req, res, next) {
 
   req.locals.connectionsPage.getNextPage = function () {
     var dt = moment(req.query.departureTime);
-    return self._base + "/connections/?departureTime=" + dt.add(10, "minutes").format("YYYY-MM-DDTHH:mm");
+    return self._base + "/connections/?departureTime=" + encodeURIComponent(dt.add(10, "minutes").format("YYYY-MM-DDTHH:mm"));
   }
   
   req.locals.connectionsPage.getPreviousPage = function () {
     var dt = moment(req.query.departureTime);
-    return self._base + "/connections/?departureTime=" + dt.subtract(10, "minutes").format("YYYY-MM-DDTHH:mm");
+    return self._base + "/connections/?departureTime=" +  encodeURIComponent(dt.subtract(10, "minutes").format("YYYY-MM-DDTHH:mm"));
   }
 
   req.locals.connectionsPage.getCurrentPage = function () {
     var dt = moment(req.query.departureTime);
-    return self._base + "/connections/?departureTime=" + dt.format("YYYY-MM-DDTHH:mm");
+    return self._base + "/connections/?departureTime=" + encodeURIComponent(dt.format("YYYY-MM-DDTHH:mm"));
   }
   
   next();

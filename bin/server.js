@@ -10,8 +10,7 @@ var express = require('express'),
     StopsController = require('../controllers/StopsController'),
     ErrorHandler = require('../middlewares/ErrorHandler'),
     compress = require('compression'),
-    fs = require('fs'),
-    MongoClient = require('mongodb').MongoClient;
+    fs = require('fs');
 
 var config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 config.baseUri = "http://localhost:" + config.port
@@ -38,7 +37,7 @@ server.use(function (req, res, next) {
     req.locals = {};
   }
   req.locals.config = config;
-  res.header('Access-Control-Allow-Origin', 'http://localhost');
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods','GET');
   res.header('Access-Control-Allow-Credentials', true);
   next();
@@ -56,9 +55,9 @@ server.get('/connections/', ConnectionsController);
 //Or redirect when we're on the homepage
 server.get('/', function (req, res, next) {
   if (req.query.departureTime) {
-    res.redirect(302,'/connections/?departureTime=' + req.locals.connectionsPage.getCorrectPageId(req.query.departureTime)); 
+    res.redirect(302, req.locals.config.baseUri + '/connections/?departureTime=' + encodeURIComponent(req.locals.page.getCorrectPageId(req.query.departureTime))); 
   } else {
-    res.redirect(302, '/connections/');
+    res.redirect(302, req.locals.config.baseUri + '/connections/');
   }
   next();
 });
