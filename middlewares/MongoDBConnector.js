@@ -1,12 +1,11 @@
-var MongoClient = require('mongodb').MongoClient;
-
+var MongoClient = require('mongodb').MongoClient,
+    MongoDBFixStream = require('./MongoDBFixStream');
 var MongoDBConnector = function () {
   return function (req, res, next) {
     req.db = MongoDBConnector;
     next();
   }
 }
-
 
 /**
  * Connect to the mongodb if not yet connected.
@@ -32,37 +31,17 @@ MongoDBConnector.connect = function (dbstring, collections, cb) {
 };
 
 MongoDBConnector.context = function (callback) {
-  // Get context
-  this._db.collection(this.collections['connections']).find({'@context': { '$exists': true}}, {'_id': 0}).toArray(function(err, context) {
-    if (err) {
-      console.error(err);
-      callback(null);
-    } else if (context && context[0]) {
-      callback(context[0]);
-    } else {
-      console.error("No context found in collection");
-      callback(null);
-    }
-  });
+  callback({"@context" : { "lc" : "http://semweb.mmlab.be/ns/linkedconnections#", "gtfs" : "http://vocab.gtfs.org/terms#", "Connection" : "http://semweb.mmlab.be/ns/linkedconnections#Connection", "dct" : "http://purl.org/dc/terms/", "date" : "dct:date", "arrivalTime" : "lc:arrivalTime", "departureTime" : "lc:departureTime", "arrivalStop" : { "@type" : "@id", "@id" : "http://semweb.mmlab.be/ns/linkedconnections#arrivalStop" }, "departureStop" : { "@type" : "@id", "@id" : "http://semweb.mmlab.be/ns/linkedconnections#departureStop" }, "trip" : { "@type" : "@id", "@id" : "gtfs:trip" }, "route" : { "@type" : "@id", "@id" : "gtfs:route" }, "headsign" : "gtfs:headsign" }});
 };
 
 /**
  * @param page is an object describing the page of the resource
  */
 MongoDBConnector._getMongoConnectionsStream = function (page, cb) {
-  var self = this;
-
-  // Get connections stream with context added
-  var connectionsStream = self._db.collection(self.collections['connections'])
-      .find({'departureTime': {'$gt': page.getInterval().start, '$lt': page.getInterval().end}})
+  var connectionsStream = this._db.collection(this.collections['connections'])
+      .find({'departureTime': {'$gte': page.getInterval().start, '$lt': page.getInterval().end}})
       .sort({'departureTime': 1})
-      .stream({
-        transform: function(connection) {
-          connection['@id'] = connection['_id'];
-          delete connection['_id'];
-          return connection;
-        }
-    });
+      .stream().pipe(new MongoDBFixStream());
   cb(null, connectionsStream);
 };
 
