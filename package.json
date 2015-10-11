@@ -10,6 +10,9 @@
   "bin" : {
     "lcs" : "./bin/server.js"
   },
+  "scripts": {
+    "start": "node ./bin/server.js"
+  },
   "bugs": {
     "url": "https://github.com/LinkedConnections/server.js/issues"
   },
