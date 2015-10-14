@@ -1,6 +1,8 @@
 #!/usr/bin/node
 
 var express = require('express'),
+    program = require('commander'),
+    path = require('path'),
     logger = require('morgan'),
     dbconnector = require('../middlewares/MongoDBConnector'), //TODO: check type
     Paginator = require('../middlewares/Paginator'),
@@ -10,7 +12,13 @@ var express = require('express'),
     compress = require('compression'),
     fs = require('fs');
 
-var config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+program
+  .option('-c --config [config]', 'specify config file')
+  .parse(process.argv);
+
+var configFile = program.config || path.join(__dirname, '../config-example.json');
+var config = JSON.parse(fs.readFileSync(configFile, { encoding: 'utf8' }));
+
 config.baseUri = "http://localhost:" + config.port
 if (config.proxy) {
   config.baseUri = config.proxy.protocol + "://" + config.proxy.hostname;
