@@ -14,6 +14,10 @@ ConnectionsModel.prototype.getPage = function (page, request, cb) {
   this._db.getConnectionsPage(page, request, cb);
 };
 
+ConnectionsModel.prototype.getTrip = function (tripid, dateParam, request, cb) {
+  this._db.getTrip(tripid, dateParam, request, cb);
+};
+
 ConnectionsModel.prototype.create = function (connection, cb) {
   this._db.add(connection);
 };

@@ -8,6 +8,7 @@ var express = require('express'),
     Paginator = require('../middlewares/Paginator'),
     ContextController = require('../controllers/ContextController'),
     ConnectionsController = require('../controllers/ConnectionsController'),
+    TripsController = require('../controllers/TripsController'),
     ErrorHandler = require('../middlewares/ErrorHandler'),
     compress = require('compression'),
     fs = require('fs');
@@ -16,7 +17,7 @@ program
   .option('-c --config [config]', 'specify config file')
   .parse(process.argv);
 
-var configFile = program.config || path.join(__dirname, '../config-example.json');
+var configFile = program.config || path.join(__dirname, '../config.json');
 var config = JSON.parse(fs.readFileSync(configFile, { encoding: 'utf8' }));
 
 config.baseUri = "http://localhost:" + config.port
@@ -53,14 +54,15 @@ server.use(logger('combined'));
 //2. If we encounter a static file (such as a favicon, css files, images...), return it immediately
 server.use(express.static(__dirname + '../public'));
 //3. Add the paginator middleware
-server.use(Paginator);
+server.use('/connections/?', Paginator);
 //4. Output json-ld: send metadata about the request as the data itself
-server.get('/:type(connections|stops)/context.json', ContextController);
+server.get('/:type(connections|stops|trips)/context.json', ContextController);
 server.get('/connections/', ConnectionsController);
+server.get('/trips/:tripid/?', TripsController);
 //Or redirect when we're on the homepage
 server.get('/', function (req, res, next) {
   if (req.query.departureTime) {
-    res.redirect(302, req.locals.config.baseUri + '/connections/?departureTime=' + encodeURIComponent(req.locals.page.getCorrectPageId(req.query.departureTime))); 
+    res.redirect(302, req.locals.config.baseUri + '/connections/?departureTime=' + encodeURIComponent(req.locals.page.getCorrectPageId(req.query.departureTime)));
   } else {
     res.redirect(302, req.locals.config.baseUri + '/connections/');
   }

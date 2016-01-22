@@ -1,5 +1,7 @@
 var MongoClient = require('mongodb').MongoClient,
+    moment = require('moment'),
     MongoDBFixStream = require('./MongoDBFixStream');
+
 var MongoDBConnector = function () {
   return function (req, res, next) {
     req.db = MongoDBConnector;
@@ -40,6 +42,14 @@ MongoDBConnector.context = function (callback) {
 MongoDBConnector._getMongoConnectionsStream = function (page, cb) {
   var connectionsStream = this._db.collection(this.collections['connections'])
       .find({'departureTime': {'$gte': page.getInterval().start, '$lt': page.getInterval().end}})
+      .sort({'departureTime': 1})
+      .stream().pipe(new MongoDBFixStream());
+  cb(null, connectionsStream);
+};
+
+MongoDBConnector.getTrip = function (tripid, dateParam, cb) {
+  var connectionsStream = this._db.collection(this.collections['connections'])
+      .find({'trip': tripid, 'departureTime' : {'$gte': dateParam, '$lt': moment(dateParam).add(1,'days').toDate()}})
       .sort({'departureTime': 1})
       .stream().pipe(new MongoDBFixStream());
   cb(null, connectionsStream);
