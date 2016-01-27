@@ -1,5 +1,6 @@
 var ConnectionsModel = require("../models/ConnectionsModel"),
-    JSONLDView = require('../views/JSONLDView');
+    JSONLDView = require('../views/JSONLDView'),
+    moment = require('moment');
 
 module.exports = function (request, response, next) {
   //1. Check whether this page is good: if it isn't, do a redirect
@@ -18,6 +19,8 @@ module.exports = function (request, response, next) {
         "@context" : request.locals.config.baseUri + "/connections/context.json",
         "@id" : request.locals.config.baseUri + "/routes/" + request.params.routeid + '/?departureTime=' + request.query.departureTime,
         "@type" : "Collection",
+        "nextPage" : request.locals.config.baseUri + "/trips/" + request.params.tripid + '/?departureTime=' + moment(dateParam).add(1,'days').toISOString().substr(0,10),
+        "previousPage" : request.locals.config.baseUri + "/trips/" + request.params.tripid + '/?departureTime=' + moment(dateParam).subtract(1,'days').toISOString().substr(0,10),
         "search" : {
           "@type" : "IriTemplate",
           "template" : request.locals.config.baseUri + "/routes/" + request.params.routeid + "/{?departureTime}",
