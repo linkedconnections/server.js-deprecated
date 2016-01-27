@@ -11,6 +11,9 @@ MongoDBFixStream.prototype._transform = function (object, encoding, done) {
   if (!object["@id"]) {
     object["@id"] = object["_id"];
   }
+  if (!object["@type"]) {
+    object["@type"] = "Connection";
+  }
   delete(object["_id"]);
   done(null, object);
 }
