@@ -8,7 +8,7 @@ var express = require('express'),
     Paginator = require('../middlewares/Paginator'),
     ContextController = require('../controllers/ContextController'),
     ConnectionsController = require('../controllers/ConnectionsController'),
-    TripsController = require('../controllers/TripsController'),
+    RoutesController = require('../controllers/RoutesController'),
     ErrorHandler = require('../middlewares/ErrorHandler'),
     compress = require('compression'),
     fs = require('fs');
@@ -56,9 +56,9 @@ server.use(express.static(__dirname + '../public'));
 //3. Add the paginator middleware
 server.use('/connections/?', Paginator);
 //4. Output json-ld: send metadata about the request as the data itself
-server.get('/:type(connections|stops|trips)/context.json', ContextController);
+server.get('/:type(connections|stops|routes)/context.json', ContextController);
 server.get('/connections/', ConnectionsController);
-server.get('/trips/:tripid/?', TripsController);
+server.get('/routes/:routeid/?', RoutesController);
 //Or redirect when we're on the homepage
 server.get('/', function (req, res, next) {
   if (req.query.departureTime) {

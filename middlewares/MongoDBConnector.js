@@ -12,7 +12,7 @@ var MongoDBConnector = function () {
 /**
  * Connect to the mongodb if not yet connected.
  * @param dbstring defines the mongoclient string to connect to mongodb
- * @param collections is an object of 
+ * @param collections is an object of
  * @param cb is a callback that needs to be called without parameters when the connection was succesful, or with 1 parameter when an error was encountered
  */
 MongoDBConnector.connect = function (dbstring, collections, cb) {
@@ -47,9 +47,9 @@ MongoDBConnector._getMongoConnectionsStream = function (page, cb) {
   cb(null, connectionsStream);
 };
 
-MongoDBConnector.getTrip = function (tripid, dateParam, cb) {
+MongoDBConnector.getRoute = function (routeid, dateParam, cb) {
   var connectionsStream = this._db.collection(this.collections['connections'])
-      .find({'trip': tripid, 'departureTime' : {'$gte': dateParam, '$lt': moment(dateParam).add(1,'days').toDate()}})
+      .find({'route': routeid, 'departureTime' : {'$gte': dateParam, '$lt': moment(dateParam).add(1,'days').toDate()}})
       .sort({'departureTime': 1})
       .stream().pipe(new MongoDBFixStream());
   cb(null, connectionsStream);
