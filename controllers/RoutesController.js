@@ -19,8 +19,8 @@ module.exports = function (request, response, next) {
         "@context" : request.locals.config.baseUri + "/connections/context.json",
         "@id" : request.locals.config.baseUri + "/routes/" + request.params.routeid + '/?departureTime=' + request.query.departureTime,
         "@type" : "Collection",
-        "nextPage" : request.locals.config.baseUri + "/trips/" + request.params.tripid + '/?departureTime=' + moment(dateParam).add(1,'days').toISOString().substr(0,10),
-        "previousPage" : request.locals.config.baseUri + "/trips/" + request.params.tripid + '/?departureTime=' + moment(dateParam).subtract(1,'days').toISOString().substr(0,10),
+        "nextPage" : request.locals.config.baseUri + "/routes/" + request.params.routeid + '/?departureTime=' + moment(dateParam).add(1,'days').toISOString().substr(0,10),
+        "previousPage" : request.locals.config.baseUri + "/routes/" + request.params.routeid + '/?departureTime=' + moment(dateParam).subtract(1,'days').toISOString().substr(0,10),
         "search" : {
           "@type" : "IriTemplate",
           "template" : request.locals.config.baseUri + "/routes/" + request.params.routeid + "/{?departureTime}",
