@@ -10,8 +10,8 @@ ConnectionsModel.prototype.get = function (connectionid, cb) {
   this._db.getConnection(connectionid);
 };
 
-ConnectionsModel.prototype.getPage = function (page, request, cb) {
-  this._db.getConnectionsPage(page, request, cb);
+ConnectionsModel.prototype.getPage = function (page, cb) {
+  this._db.getConnectionsPage(page, cb);
 };
 
 ConnectionsModel.prototype.create = function (connection, cb) {
