@@ -14,23 +14,35 @@ module.exports = function (request, response, next) {
     var connections = new ConnectionsModel(request.db);
     var view = new JSONLDView({
       "@context" : {
-        "hydra" : "http://www.w3.org/ns/hydra/core#",
-        "gtfs" : "http://vocab.gtfs.org/terms#",
-        "lc": "http://semweb.mmlab.be/ns/linkedconnections#",
-        "arrivalTime" : "http://semweb.mmlab.be/ns/linkedconnections#arrivalTime",
-        "departureTime" : "http://semweb.mmlab.be/ns/linkedconnections#departureTime",
-        "arrivalStop" : {
-          "@id" : "http://semweb.mmlab.be/ns/linkedconnections#arrivalStop",
-          "@type" : "@id"
+        hydra: "http://www.w3.org/ns/hydra/core#",
+        property: {
+          "@id": "hydra:property",
+          "@type": "@vocab"
         },
-        "departureStop" : {
-          "@id" : "http://semweb.mmlab.be/ns/linkedconnections#departureStop",
-          "@type" : "@id"
+        required: "hydra:required",
+        Collection: "hydra:Collection",
+        member: {
+          "@id": "hydra:member",
+          "@type": "@id"
         },
-        "trip" : {
-          "@id" : "gtfs:trip",
-          "@type" : "@id"
-        }
+        search: "hydra:search",
+        PagedCollection: "hydra:PagedCollection",
+        nextPage: {
+          "@id": "hydra:nextPage",
+          "@type": "@id"
+        },
+        previousPage: {
+          "@id": "hydra:previousPage",
+          "@type": "@id"
+        },
+        TemplatedLink: "hydra:TemplatedLink",
+        IriTemplate: "hydra:IriTemplate",
+        template: "hydra:template",
+        mapping: "hydra:mapping",
+        IriTemplateMapping: "hydra:IriTemplateMapping",
+        variable: "hydra:variable",
+        comment: "rdfs:comment",
+        label: "rdfs:label"
       },
       "@id" : request.locals.page.getCurrentPage(),
       "@type" : "PagedCollection",
