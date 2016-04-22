@@ -41,8 +41,14 @@ module.exports = function (request, response, next) {
         mapping: "hydra:mapping",
         IriTemplateMapping: "hydra:IriTemplateMapping",
         variable: "hydra:variable",
-        comment: "rdfs:comment",
-        label: "rdfs:label"
+        lc: "http://semweb.mmlab.be/ns/linkedconnections#",
+        gtfs: "http://vocab.gtfs.org/terms#",
+        Connection: "http://semweb.mmlab.be/ns/linkedconnections#Connection",
+        arrivalTime:"lc:arrivalTime",
+        departureTime:"lc:departureTime",
+        arrivalStop:{"@type":"@id","@id":"http://semweb.mmlab.be/ns/linkedconnections#arrivalStop"},
+        departureStop:{"@type":"@id","@id":"http://semweb.mmlab.be/ns/linkedconnections#departureStop"},
+        trip:{"@type":"@id","@id":"gtfs:trip"}
       },
       "@id" : request.locals.page.getCurrentPage(),
       "@type" : "PagedCollection",
