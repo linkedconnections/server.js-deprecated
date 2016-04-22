@@ -13,7 +13,25 @@ module.exports = function (request, response, next) {
     // → We will now have to create a model for the data we want to retrieve from the db
     var connections = new ConnectionsModel(request.db);
     var view = new JSONLDView({
-      "@context" : request.locals.config.baseUri + "/connections/context.json",
+      "@context" : {
+        "hydra" : "http://www.w3.org/ns/hydra/core#",
+        "gtfs" : "http://vocab.gtfs.org/terms#",
+        "lc": "http://semweb.mmlab.be/ns/linkedconnections#",
+        "arrivalTime" : "http://semweb.mmlab.be/ns/linkedconnections#arrivalTime",
+        "departureTime" : "http://semweb.mmlab.be/ns/linkedconnections#departureTime",
+        "arrivalStop" : {
+          "@id" : "http://semweb.mmlab.be/ns/linkedconnections#arrivalStop",
+          "@type" : "@id"
+        },
+        "departureStop" : {
+          "@id" : "http://semweb.mmlab.be/ns/linkedconnections#departureStop",
+          "@type" : "@id"
+        },
+        "trip" : {
+          "@id" : "gtfs:trip",
+          "@type" : "@id"
+        }
+      },
       "@id" : request.locals.page.getCurrentPage(),
       "@type" : "PagedCollection",
       "nextPage" : request.locals.page.getNextPage(),

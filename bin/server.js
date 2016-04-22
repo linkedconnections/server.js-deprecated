@@ -6,7 +6,6 @@ var express = require('express'),
     logger = require('morgan'),
     dbconnector = require('../middlewares/MongoDBConnector'), //TODO: check type
     Paginator = require('../middlewares/Paginator'),
-    ContextController = require('../controllers/ContextController'),
     ConnectionsController = require('../controllers/ConnectionsController'),
     ErrorHandler = require('../middlewares/ErrorHandler'),
     compress = require('compression'),
@@ -55,7 +54,6 @@ server.use(express.static(__dirname + '../public'));
 //3. Add the paginator middleware
 server.use(Paginator);
 //4. Output json-ld: send metadata about the request as the data itself
-server.get('/:type(connections|stops)/context.json', ContextController);
 server.get('/connections/', ConnectionsController);
 //Or redirect when we're on the homepage
 server.get('/', function (req, res, next) {

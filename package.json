@@ -1,6 +1,6 @@
 {
   "name": "lc-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A nodejs/express implementation of a Linked Connections server",
   "main": "bin/server.js",
   "repository": {
