@@ -1,6 +1,6 @@
 {
   "name": "lc-server",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A nodejs/express implementation of a Linked Connections server",
   "main": "bin/server.js",
   "repository": {
@@ -30,6 +30,7 @@
     "jsonld": "~0.3.19",
     "mime": "~1.2.11",
     "moment": "^2.10.6",
+    "moment-timezone": "^0.5.3",
     "mongodb": "~1.4.29",
     "morgan": "~1.5.1",
     "n3": "~0.4.1",

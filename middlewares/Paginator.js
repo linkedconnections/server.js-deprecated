@@ -1,4 +1,4 @@
-var moment = require('moment');
+var moment = require('moment-timezone');
 
 //This is a paginator for the connections stream
 module.exports = function (req, res, next) {  
@@ -8,10 +8,11 @@ module.exports = function (req, res, next) {
   }
   req.locals.page = {};
   req.locals.page.getInterval = function () {
-    var dt = new Date(req.query.departureTime);
+    var dt = moment.tz(req.query.departureTime, req.locals.config["default-timezone"] || "Europe/Brussels");
+    var end = moment(dt).add(10,'minutes');
     return {
-      start : dt,
-      end : new Date(dt.getTime() + 10 * 60000)
+      start : dt.toDate(),
+      end : end.toDate()
     };
   };
   this._base = req.locals.config.baseUri;
@@ -21,9 +22,9 @@ module.exports = function (req, res, next) {
   var self = this;
   req.locals.page.getCorrectPageId = function (dt) {
     if (!dt) {
-      dt = moment(req.query.departureTime);
+      dt = moment.tz(req.query.departureTime, req.locals.config["default-timezone"] || "Europe/Brussels");
     } else {
-      dt = moment(dt);
+      dt = moment.tz(dt, req.locals.config["default-timezone"] || "Europe/Brussels");
     }
 
     // Round minutes down with modulus of 10
@@ -34,17 +35,17 @@ module.exports = function (req, res, next) {
   };
 
   req.locals.page.getNextPage = function () {
-    var dt = moment(req.query.departureTime);
+    var dt = moment.tz(req.query.departureTime, req.locals.config["default-timezone"] || "Europe/Brussels");
     return self._base + "/connections/?departureTime=" + encodeURIComponent(dt.add(10, "minutes").format("YYYY-MM-DDTHH:mm"));
   }
   
   req.locals.page.getPreviousPage = function () {
-    var dt = moment(req.query.departureTime);
+    var dt = moment.tz(req.query.departureTime, req.locals.config["default-timezone"] || "Europe/Brussels");
     return self._base + "/connections/?departureTime=" +  encodeURIComponent(dt.subtract(10, "minutes").format("YYYY-MM-DDTHH:mm"));
   }
 
   req.locals.page.getCurrentPage = function () {
-    var dt = moment(req.query.departureTime);
+    var dt = moment.tz(req.query.departureTime, req.locals.config["default-timezone"] || "Europe/Brussels");
     return self._base + "/connections/?departureTime=" + encodeURIComponent(dt.format("YYYY-MM-DDTHH:mm"));
   }
   
