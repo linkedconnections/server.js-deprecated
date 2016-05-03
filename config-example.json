@@ -8,6 +8,7 @@
     }
   },
   "default-timezone" : "Europe/Brussels",
+  "pagesize-minutes" : 10,
   "port" : 8080,
   "proxy" : {
     "port" : 8080,
