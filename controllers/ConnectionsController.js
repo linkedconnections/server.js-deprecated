@@ -28,11 +28,11 @@ module.exports = function (request, response, next) {
         search: "hydra:search",
         PagedCollection: "hydra:PagedCollection",
         nextPage: {
-          "@id": "hydra:nextPage",
+          "@id": "hydra:next",
           "@type": "@id"
         },
         previousPage: {
-          "@id": "hydra:previousPage",
+          "@id": "hydra:previous",
           "@type": "@id"
         },
         TemplatedLink: "hydra:TemplatedLink",
