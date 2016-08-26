@@ -7,6 +7,7 @@ var express = require('express'),
     dbconnector = require('../middlewares/MongoDBConnector'), //TODO: check type
     Paginator = require('../middlewares/Paginator'),
     ConnectionsController = require('../controllers/ConnectionsController'),
+    IndexController = require('../controllers/IndexController'),
     ErrorHandler = require('../middlewares/ErrorHandler'),
     compress = require('compression'),
     fs = require('fs');
@@ -55,6 +56,8 @@ server.use(express.static(__dirname + '../public'));
 server.use(Paginator);
 //4. Output json-ld: send metadata about the request as the data itself
 server.get('/connections/', ConnectionsController);
+
+server.get('/index/:date?', IndexController);
 //Or redirect when we're on the homepage
 server.get('/', function (req, res, next) {
   if (req.query.departureTime) {
